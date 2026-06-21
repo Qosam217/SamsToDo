@@ -2,38 +2,27 @@ package com.project.samstodo.page
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.project.samstodo.components.TaskCard
+import com.project.samstodo.models.Task
 
 @Composable
 fun TaskListScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tasks: List<Task>
 ){
-    val tasks = listOf(
-        "Miss Herta",
-        "Yao Guang",
-        "Ruan Mei",
-        "Cyrene",
-        "Castorice",
-        "Nihilux",
-        "Evanescia",
-        "Hysilens",
-        "Aglaea",
-        "Fugue",
-        "Black Swan",
-        "Topaz",
-        "Archeron",
-    )
-
     LazyColumn(
         modifier = modifier
     ) {
         items(tasks){ task ->
-            Card{
-                Text(task)
-            }
+            TaskCard(
+                title = task.title,
+                description = task.description,
+                isDaily = task.isDaily,
+                dateFrom = task.dateFrom,
+                dateTo = task.dateTo
+            )
         }
     }
 }

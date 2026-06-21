@@ -3,7 +3,6 @@ package com.project.samstodo.components
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import com.project.samstodo.R
@@ -25,9 +24,6 @@ fun BottomBar(
                     painter = painterResource(R.drawable.tasklist),
                     contentDescription = "Task"
                 )
-            },
-            label = {
-                Text("Task")
             }
         )
         NavigationBarItem(
@@ -40,9 +36,18 @@ fun BottomBar(
                     painter = painterResource(R.drawable.schedule),
                     contentDescription = "Schedule"
                 )
+            }
+        )
+        NavigationBarItem(
+            selected = selectedTab == BottomTab.NOTE,
+            onClick = {
+                onTabSelected(BottomTab.NOTE)
             },
-            label = {
-                Text("Schedule")
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.note),
+                    contentDescription = "Note"
+                )
             }
         )
     }
