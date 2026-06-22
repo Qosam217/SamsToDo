@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.project.samstodo.models.TaskType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -26,7 +27,7 @@ fun TaskCard(
     description: String,
     dateTo: Date?,
     dateFrom: Date?,
-    isDaily: Boolean,
+    taskType: TaskType,
     onClick: () -> Unit = {}
 ){
     val formatter = SimpleDateFormat(
@@ -35,7 +36,7 @@ fun TaskCard(
     )
 
     val dateLabel = when {
-        isDaily -> "Daily"
+        taskType == TaskType.DAILY -> "Daily"
 
         dateFrom != null && dateTo != null ->
             "${formatter.format(dateFrom)} - ${formatter.format(dateTo)}"

@@ -10,7 +10,8 @@ import com.project.samstodo.models.Task
 @Composable
 fun TaskListScreen(
     modifier: Modifier = Modifier,
-    tasks: List<Task>
+    tasks: List<Task>,
+    onTaskClick: (Task) -> Unit
 ){
     LazyColumn(
         modifier = modifier
@@ -19,9 +20,12 @@ fun TaskListScreen(
             TaskCard(
                 title = task.title,
                 description = task.description,
-                isDaily = task.isDaily,
                 dateFrom = task.dateFrom,
-                dateTo = task.dateTo
+                dateTo = task.dateTo,
+                taskType = task.taskType,
+                onClick = {
+                    onTaskClick(task)
+                }
             )
         }
     }

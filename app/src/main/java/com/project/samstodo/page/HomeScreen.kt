@@ -13,12 +13,12 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.project.samstodo.components.AddTaskFab
+import com.project.samstodo.components.TaskDetailDialog
 import com.project.samstodo.components.TaskDialog
 import com.project.samstodo.models.Task
-import com.project.samstodo.models.TaskType
 
 @Composable
-fun HomeScreen(){
+fun HomeScreen() {
     var selectedTab by remember {
         mutableStateOf(BottomTab.TASK)
     }
@@ -29,6 +29,14 @@ fun HomeScreen(){
 
     val tasks = remember {
         mutableStateListOf<Task>()
+    }
+
+    var selectedTask by remember {
+        mutableStateOf<Task?>(null)
+    }
+
+    var showTaskDetail by remember{
+        mutableStateOf(false)
     }
 
     Scaffold(
@@ -56,11 +64,15 @@ fun HomeScreen(){
             )
         }
     ) { innerPadding ->
-        when (selectedTab){
+        when (selectedTab) {
             BottomTab.TASK -> {
                 TaskListScreen(
                     modifier = Modifier.padding(innerPadding),
-                    tasks = tasks
+                    tasks = tasks,
+                    onTaskClick = { task ->
+                        selectedTask = task
+                        showTaskDetail = true
+                    }
                 )
             }
 
@@ -78,24 +90,41 @@ fun HomeScreen(){
         }
     }
 
-    if (showTaskDialog){
+    if (showTaskDialog) {
         TaskDialog(
             onDismiss = {
                 showTaskDialog = false
             },
-            onCreate = { title, description, isDaily ->
+            onCreate = { title, description, taskType, dateFrom, dateTo ->
                 tasks.add(
                     Task(
                         title = title,
                         description = description,
-                        isDaily = isDaily,
-                        taskType = if (isDaily){
-                            TaskType.DAILY
-                        }else{
-                            TaskType.RANGE
-                        }
+                        dateFrom = dateFrom,
+                        dateTo = dateTo,
+                        taskType = taskType
                     )
                 )
+            }
+        )
+    }
+
+    if (showTaskDetail && selectedTask != null){
+        TaskDetailDialog(
+            task = selectedTask!!,
+            onDismiss = {
+                showTaskDetail = false
+            },
+            onEdit = {
+
+            },
+
+            onDelete = {
+
+            },
+
+            onCompletedChanged = {
+
             }
         )
     }
