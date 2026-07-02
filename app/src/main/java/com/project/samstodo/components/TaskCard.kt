@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.project.samstodo.models.TaskType
 import java.text.SimpleDateFormat
@@ -28,6 +29,7 @@ fun TaskCard(
     dateTo: Date?,
     dateFrom: Date?,
     taskType: TaskType,
+    isCompleted: Boolean,
     onClick: () -> Unit = {}
 ){
     val formatter = SimpleDateFormat(
@@ -62,7 +64,8 @@ fun TaskCard(
             ) {
                 Text(
                     text = title,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = if(isCompleted) TextDecoration.LineThrough else TextDecoration.None
                 )
                 Spacer(
                     modifier = Modifier.height(4.dp)

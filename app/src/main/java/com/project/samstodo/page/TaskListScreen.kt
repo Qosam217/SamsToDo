@@ -23,6 +23,7 @@ fun TaskListScreen(
                 dateFrom = task.dateFrom,
                 dateTo = task.dateTo,
                 taskType = task.taskType,
+                isCompleted = task.isCompleted,
                 onClick = {
                     onTaskClick(task)
                 }

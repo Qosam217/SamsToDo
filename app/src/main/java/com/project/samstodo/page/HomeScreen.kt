@@ -3,6 +3,7 @@ package com.project.samstodo.page
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.project.samstodo.components.BottomBar
@@ -12,13 +13,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelProvider
 import com.project.samstodo.components.AddTaskFab
 import com.project.samstodo.components.TaskDetailDialog
 import com.project.samstodo.components.TaskDialog
+import com.project.samstodo.database.TaskDatabase
+import com.project.samstodo.database.TaskRepository
 import com.project.samstodo.models.Task
+import com.project.samstodo.models.TaskDialogMode
+import com.project.samstodo.viewmodel.TaskViewModel
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(viewModel: TaskViewModel) {
     var selectedTab by remember {
         mutableStateOf(BottomTab.TASK)
     }
@@ -27,9 +33,11 @@ fun HomeScreen() {
         mutableStateOf(false)
     }
 
-    val tasks = remember {
-        mutableStateListOf<Task>()
+    var showEditDialog by remember {
+        mutableStateOf(false)
     }
+
+    val tasks by viewModel.tasks.collectAsState()
 
     var selectedTask by remember {
         mutableStateOf<Task?>(null)
@@ -92,19 +100,14 @@ fun HomeScreen() {
 
     if (showTaskDialog) {
         TaskDialog(
+            mode = TaskDialogMode.CREATE,
+            task = null,
             onDismiss = {
                 showTaskDialog = false
             },
-            onCreate = { title, description, taskType, dateFrom, dateTo ->
-                tasks.add(
-                    Task(
-                        title = title,
-                        description = description,
-                        dateFrom = dateFrom,
-                        dateTo = dateTo,
-                        taskType = taskType
-                    )
-                )
+            onSubmit = { task ->
+                viewModel.insert(task)
+                showTaskDialog = false
             }
         )
     }
@@ -116,15 +119,51 @@ fun HomeScreen() {
                 showTaskDetail = false
             },
             onEdit = {
-
+                showTaskDetail = false
+                showEditDialog = true
             },
-
             onDelete = {
-
+                viewModel.delete(selectedTask!!)
+                showTaskDetail = false
+                selectedTask = null
             },
+            onCompletedChanged = { completed ->
+                val index = tasks.indexOfFirst {
+                    it.id == selectedTask!!.id
+                }
+                if (index != -1){
+                    viewModel.update(
+                        selectedTask!!.copy(
+                            isCompleted = completed
+                        )
+                    )
+                    selectedTask = tasks[index]
+                }
+                showTaskDetail = false
+                selectedTask = null
+            }
+        )
+    }
 
-            onCompletedChanged = {
+    if(showEditDialog && selectedTask != null){
+        TaskDialog(
+            mode = TaskDialogMode.EDIT,
+            task = selectedTask,
+            onDismiss = {
+                showEditDialog = false
+            },
+            onSubmit = { updatedTask ->
 
+                val index = tasks.indexOfFirst {
+                    it.id == updatedTask.id
+                }
+
+                if (index != -1) {
+                    viewModel.update(updatedTask)
+                    selectedTask = updatedTask
+                }
+
+                showEditDialog = false
             }
         )
     }

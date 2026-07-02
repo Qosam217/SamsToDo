@@ -29,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.project.samstodo.models.Task
+import com.project.samstodo.models.TaskDialogMode
 import com.project.samstodo.models.TaskType
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -36,33 +38,29 @@ import java.util.Locale
 
 @Composable
 fun TaskDialog(
+    mode: TaskDialogMode,
+    task: Task?,
     onDismiss: () -> Unit,
-    onCreate: (
-            title: String,
-            description: String,
-            taskType: TaskType,
-            dateFrom: Date?,
-            dateTo: Date?
-            ) -> Unit
+    onSubmit: (Task) -> Unit,
 ){
-    var title by remember {
-        mutableStateOf("")
+    var title by remember(task) {
+        mutableStateOf(task?.title?:"")
     }
 
-    var description by remember {
-        mutableStateOf("")
+    var description by remember(task) {
+        mutableStateOf(task?.description?:"")
     }
 
-    var taskType by remember{
-        mutableStateOf(TaskType.DAILY)
+    var taskType by remember(task){
+        mutableStateOf(task?.taskType?:TaskType.DAILY)
     }
 
-    var dateFrom by remember {
-        mutableStateOf<Date?>(null)
+    var dateFrom by remember(task) {
+        mutableStateOf<Date?>(task?.dateFrom)
     }
 
-    var dateTo by remember {
-        mutableStateOf<Date?>(null)
+    var dateTo by remember(task) {
+        mutableStateOf<Date?>(task?.dateTo)
     }
 
     var showDateRangePicker by remember {
@@ -88,7 +86,10 @@ fun TaskDialog(
                     )
             ) {
                 Text(
-                    text = "Create Task"
+                    if(mode == TaskDialogMode.CREATE)
+                        "Create Task"
+                    else
+                        "Edit Task"
                 )
 
                 Spacer(
@@ -195,17 +196,25 @@ fun TaskDialog(
                                 return@Button
                             }
 
-                            onCreate(
-                                title,
-                                description,
-                                taskType,
-                                dateFrom,
-                                dateTo
+                            val resultTask = Task(
+                                id = task?.id?: System.currentTimeMillis(),
+                                title = title,
+                                description = description,
+                                taskType = taskType,
+                                dateFrom = dateFrom,
+                                dateTo = dateTo,
+                                isCompleted = task?.isCompleted ?: false
                             )
+                            onSubmit(resultTask)
                             onDismiss()
                         }
                     ) {
-                        Text("Create")
+                        Text(
+                            if(mode == TaskDialogMode.CREATE)
+                                "Create"
+                            else
+                                "Save"
+                        )
                     }
                 }
             }
